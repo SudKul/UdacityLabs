@@ -11,7 +11,7 @@
     },
     "rootUsername": {
       "type": "string",
-      "defaultValue": "root",
+      "defaultValue": "azureuser",
       "metadata": {
         "description": "Username for the Virtual Machine."
       }
@@ -762,7 +762,11 @@
       "type": "Microsoft.Compute/virtualMachines",
       "apiVersion": "2018-06-01",
       "location": "[resourceGroup().location]",
-
+      "plan": {
+        "name": "kali",
+        "publisher":"kali-linux",
+        "product":"kali"
+      },
       "dependsOn": [
         "[concat('Microsoft.Network/networkInterfaces/', variables('kaliinternalnicName'))]"
       ],
