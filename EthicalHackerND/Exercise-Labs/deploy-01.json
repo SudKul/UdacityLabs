@@ -880,11 +880,6 @@
       "dependsOn": [
         "[concat('Microsoft.Network/networkInterfaces/', variables('win10nicName'))]"
       ],
-      "plan": {
-        "name": "pro-preview",
-        "product": "windows10preview",
-        "publisher": "microsoft-hyperv"
-      },
       "properties": {
         "hardwareProfile": {
           "vmSize": "[variables('win10vmSize')]"
