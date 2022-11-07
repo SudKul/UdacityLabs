@@ -108,6 +108,155 @@
     {
       "apiVersion": "2017-04-01",
       "type": "Microsoft.Network/publicIPAddresses",
+      "name": "[variables('kalipublicIPAddressName')]",
+      "location": "[variables('location')]",
+      "properties": {
+        "publicIPAllocationMethod": "[variables('publicIPAddressType')]",
+        "dnsSettings": {
+          "domainNameLabel": "[variables('kaliPipDnsName')]"
+        }
+      }
+    },
+    {
+      "apiVersion": "2017-04-01",
+      "type": "Microsoft.Network/virtualNetworks",
+      "name": "[variables('kalivirtualNetworkName')]",
+      "location": "[variables('location')]",
+      "properties": {
+        "addressSpace": {
+          "addressPrefixes": [
+            "[variables('kaliaddressPrefix')]"
+          ]
+        },
+        "subnets": [
+          {
+            "name": "[variables('kalisubnetName')]",
+            "properties": {
+              "addressPrefix": "[variables('kalisubnetPrefix')]"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "[variables('kalinetworkSecurityGroupName')]",
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "apiVersion": "2017-06-01",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "securityRules": [
+          {
+            "name": "SSH",
+            "properties": {
+              "priority": 300,
+              "protocol": "TCP",
+              "access": "Allow",
+              "direction": "Inbound",
+              "sourceAddressPrefix": "*",
+              "sourcePortRange": "*",
+              "destinationAddressPrefix": "*",
+              "destinationPortRange": "22"
+            }
+          },
+          {
+            "name": "kali_xrdp",
+            "properties": {
+              "priority": 310,
+              "protocol": "TCP",
+              "access": "Allow",
+              "direction": "Inbound",
+              "sourceAddressPrefix": "*",
+              "sourcePortRange": "*",
+              "destinationAddressPrefix": "*",
+              "destinationPortRange": "3389"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "apiVersion": "2017-04-01",
+      "type": "Microsoft.Network/networkInterfaces",
+      "name": "[variables('kalinicName')]",
+      "location": "[variables('location')]",
+      "dependsOn": [
+        "[concat('Microsoft.Network/publicIPAddresses/', variables('kalipublicIPAddressName'))]",
+        "[concat('Microsoft.Network/virtualNetworks/', variables('kalivirtualNetworkName'))]"
+      ],
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "privateIPAllocationMethod": "Static",
+              "privateIPAddress": "10.2.0.4",
+              "publicIPAddress": {
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses',variables('kalipublicIPAddressName'))]"
+              },
+              "subnet": {
+                "id": "[variables('kalisubnetRef')]"
+              }
+            }
+          }
+        ],
+        "networkSecurityGroup": {
+          "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('kalinetworkSecurityGroupName'))]"
+        }
+      }
+    },
+    {
+      "name": "[variables('kalivmName')]",
+      "type": "Microsoft.Compute/virtualMachines",
+      "apiVersion": "2018-06-01",
+      "location": "[resourceGroup().location]",
+      "plan": {
+        "name": "kali",
+        "publisher":"kali-linux",
+        "product":"kali"
+      },
+      "dependsOn": [
+        "[concat('Microsoft.Network/networkInterfaces/', variables('kalinicName'))]"
+      ],
+
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "[variables('kalivmSize')]"
+        },
+
+        "storageProfile": {
+          "osDisk": {
+            "createOption": "FromImage",
+            "name": "[concat(variables('kalivmName'), '-osdisk')]",
+            "caching": "ReadWrite",
+            "managedDisk": {
+              "storageAccountType": "Standard_LRS"
+            },
+            "diskSizeGB": 128
+          },
+          "imageReference": {
+            "publisher": "kali-linux",
+            "offer": "kali",
+            "sku": "kali",
+            "version": "2022.3.0"
+          }
+        },
+        "osProfile": {
+          "computerName": "Kali",
+          "adminUsername": "[parameters('kaliAdminUsername')]",
+          "adminPassword": "[parameters('kaliAdminPassword')]"
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('kalinicName'))]"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "apiVersion": "2017-04-01",
+      "type": "Microsoft.Network/publicIPAddresses",
       "name": "[variables('debianx64DMZOnCloudNewpublicIPAddressName')]",
       "location": "[variables('location')]",
       "properties": {
