@@ -21,10 +21,10 @@ $labResourceGroupName = "nd350-rg"
 # $vmName = "Debianx64DMZOnCloudNew"
 # $nicName = "debianx64dmzoncloudn979"
 
-# Arrays
-$udacityImageDefinitionNameArray = @("Debianx64DMZOnCloudNewImage")
-$vmNameArray = @("Debianx64DMZOnCloudNew")
-$nicNameArray = @("debianx64dmzoncloudn979")
+# Arrays - Provided by Udacity 
+$udacityImageDefinitionNameArray = @("Debianx64DMZOnCloudNewImage","Debianx64DMZwebCMSCloudImage", "DMZIServerImage")
+$vmNameArray = @("Debianx64DMZOnCloudNew", "Debianx64DMZwebCMSCloud", "DMZIServer")
+$nicNameArray = @("debianx64dmzoncloudn979", "debianx64dmzwebcmscl163", "dmziserver483")
 
 $SubscriptionId = Get-AzSubscription -SubscriptionId $UserSubscriptionId
 Set-AzContext -Subscription $SubscriptionId
@@ -68,12 +68,10 @@ $TenantId = $SubscriptionId.TenantId
   $tenant2 = $TenantId
   Connect-AzAccount -ServicePrincipal -Credential $cred -Tenant $tenant2 -Force
 
-  # $udacityImageDefinitionNameArray = @("Debianx64DMZOnCloudNewImage")
-  # $vmNameArray = @("Debianx64DMZOnCloudNew")
-  # $nicNameArray = @("debianx64dmzoncloudn979")
   # $myArray[$i]
   # Loop
   For ($i=0; $i -le $vmNameArray.Length; $i++) {      
+    Write-Host "`nLoop $i started!"
     # Set a variable for the image version in Tenant 1 using the full image ID of the shared image version
     $image = ("/subscriptions/{0}/resourceGroups/{1}/providers/Microsoft.Compute/galleries/{2}/images/{3}/versions/{4}" -f $udacitySubscriptionId, $udacityResourceGroup, $udacityImageGalleryName, $udacityImageDefinitionNameArray[$i], $udacityImageVersion)
 
@@ -81,11 +79,13 @@ $TenantId = $SubscriptionId.TenantId
     $nic = Get-AzNetworkInterface -Name $nicNameArray[$i] -ResourceGroupName $labResourceGroupName 
 
     # Set VM config, and create a virtual machine
-    $osDisk = $vmNameArray[$i]
-    $vmConfig = New-AzVMConfig -VMName $vmNameArray[$i] -VMSize Standard_B1s | Set-AzVMSourceImage -Id $image | Add-AzVMNetworkInterface -Id $nic.Id  
-    $vmConfig = Set-AzVMOSDisk -VM $vmConfig -Name "$osDisk-myos-disk" -StorageAccountType "Standard_LRS"-CreateOption FromImage
+    $osDiskName = $vmNameArray[$i]
+    $vmConfig = New-AzVMConfig -VMName $vmNameArray[$i] -VMSize Standard_B1s
+    $vmConfig = Set-AzVMSourceImage -VM $vmConfig -Id $image
+    $vmConfig = Add-AzVMNetworkInterface -VM $vmConfig -Id $nic.Id
+    $vmConfig = Set-AzVMOSDisk -VM $vmConfig -Name "$osDiskName-myos-disk" -StorageAccountType "Standard_LRS" -CreateOption FromImage
     $vmConfig = Set-AzVMBootDiagnostic -VM $vmConfig -Disable
-    $vm = New-AzVM -ResourceGroupName $labResourceGroupName -Location $labResourceGroupLocation -VM $vmConfig -Verbose
+    $vm = New-AzVM -ResourceGroupName $labResourceGroupName -Location $labResourceGroupLocation -VM $vmConfig -Debug
     if($vm) { Write-Host "`nSUCCESS!" }
     else
     {
