@@ -10,7 +10,7 @@ $clientSecret = "CZ08Q~q_lHJpbJKLyygAHPXvS-AeYRzShqagpabU"
 $udacitySubscriptionId = "75011c23-45a5-4aba-bef5-48d15414dd8d"
 $udacityResourceGroup = "Vendor_Spektra"
 $udacityImageGalleryName = "Spektra_Machine_Images"
-$udacityImageDefinitionName = "Debianx64DMZOnCloudNewImage"
+# $udacityImageDefinitionName = "Debianx64DMZOnCloudNewImage"
 $udacityImageVersion = "1.0.0"
 $tenant1 = "9441a015-f081-4b16-8111-e38c5a1de18e"
 
@@ -18,13 +18,13 @@ $tenant1 = "9441a015-f081-4b16-8111-e38c5a1de18e"
 $UserSubscriptionId= "cb8b28bf-cbe1-4648-9a3b-82aab5f9d651"
 $labResourceGroupName = "nd350-rg"
 
-# ToDo for the Student
-$vmName = "Debianx64DMZOnCloudNewTEST2"
-#$myNetworkSecurityGroup = "debianx64DMZOnCloudNew-nsg"
-#$myNetworkSecurityGroupRuleRDP = "myNSGRDP"                 ## CHANGE
-#$vnetName = "MigrateVM-vnet"
-#$mySubnetName = "servers"
-$myNicName = "debianx64dmzoncloudn979"
+# $vmName = "Debianx64DMZOnCloudNew"
+# $nicName = "debianx64dmzoncloudn979"
+
+# Arrays
+$udacityImageDefinitionNameArray = @("Debianx64DMZOnCloudNewImage")
+$vmNameArray = @("Debianx64DMZOnCloudNew")
+$nicNameArray = @("debianx64dmzoncloudn979")
 
 $SubscriptionId = Get-AzSubscription -SubscriptionId $UserSubscriptionId
 Set-AzContext -Subscription $SubscriptionId
@@ -39,8 +39,7 @@ $TenantId = $SubscriptionId.TenantId
   else
   {
     Write-Host "`nOOPS! Resource group not found."
-    return
-    # $rg = New-AzResourceGroup -Name $labResourceGroupName -Location $labResourceGroupLocation -Tag @{AppCode="UDACITY"; ContentType='LAB'; CourseName='MLND'}
+    return    
   }
 
   # Grant access to the Udacity App
@@ -69,25 +68,29 @@ $TenantId = $SubscriptionId.TenantId
   $tenant2 = $TenantId
   Connect-AzAccount -ServicePrincipal -Credential $cred -Tenant $tenant2 -Force
 
-  # Set a variable for the image version in Tenant 1 using the full image ID of the shared image version
-  $image = ("/subscriptions/{0}/resourceGroups/{1}/providers/Microsoft.Compute/galleries/{2}/images/{3}/versions/{4}" -f $udacitySubscriptionId, $udacityResourceGroup, $udacityImageGalleryName, $udacityImageDefinitionName, $udacityImageVersion)
+  # $udacityImageDefinitionNameArray = @("Debianx64DMZOnCloudNewImage")
+  # $vmNameArray = @("Debianx64DMZOnCloudNew")
+  # $nicNameArray = @("debianx64dmzoncloudn979")
+  # $myArray[$i]
+  # Loop
+  For ($i=0; $i -le $vmNameArray.Length; $i++) {      
+    # Set a variable for the image version in Tenant 1 using the full image ID of the shared image version
+    $image = ("/subscriptions/{0}/resourceGroups/{1}/providers/Microsoft.Compute/galleries/{2}/images/{3}/versions/{4}" -f $udacitySubscriptionId, $udacityResourceGroup, $udacityImageGalleryName, $udacityImageDefinitionNameArray[$i], $udacityImageVersion)
 
-  # Networking pieces
-  # $subnetConfig = New-AzVirtualNetworkSubnetConfig -Name $mySubnetName  -AddressPrefix "192.168.1.0/24"
-  # $vnet = New-AzVirtualNetwork -ResourceGroupName $labResourceGroupName -Location $labResourceGroupLocation -Name $vnetName -AddressPrefix 192.168.0.0/16 -Subnet $subnetConfig
-  # $pip = New-AzPublicIpAddress -ResourceGroupName $labResourceGroupName -Location $labResourceGroupLocation -Name "mypublicdns$(Get-Random)" -AllocationMethod Static -IdleTimeoutInMinutes 4  
-  # $nsgRuleRDP = New-AzNetworkSecurityRuleConfig -Name $myNetworkSecurityGroupRuleRDP  -Protocol Tcp -Direction Inbound -Priority 1000 -SourceAddressPrefix * -SourcePortRange * -DestinationAddressPrefix * -DestinationPortRange 3389 -Access Allow
-  # $nsg = New-AzNetworkSecurityGroup -ResourceGroupName $labResourceGroupName -Location $labResourceGroupLocation -Name $myNetworkSecurityGroup -SecurityRules $nsgRuleRDP
-  # $nic = New-AzNetworkInterface -Name $myNicName -ResourceGroupName $labResourceGroupName -Location $labResourceGroupLocation -SubnetId $vnet.Subnets[0].Id -PublicIpAddressId $pip.Id -NetworkSecurityGroupId $nsg.Id
-  
-  # $subnetConfig --> $vnet --> $nic
-  # $pip + $nsg --> $nic
-  
-  # $nic = Get-AzNetworkInterface -Name "debianx64dmzoncloudn979" -ResourceGroupName "nd350-rg"
-  $nic = Get-AzNetworkInterface -Name $myNicName -ResourceGroupName $labResourceGroupName 
+    # Get the existing NIC
+    $nic = Get-AzNetworkInterface -Name $nicNameArray[$i] -ResourceGroupName $labResourceGroupName 
 
-  # Set VM config, and create a virtual machine
-  $vmConfig = New-AzVMConfig -VMName $vmName -VMSize Standard_B1s | Set-AzVMSourceImage -Id $image | Add-AzVMNetworkInterface -Id $nic.Id  
-  $vmConfig = Set-AzVMOSDisk -VM $vmConfig -Name "$vmName-os-disk" -StorageAccountType "Standard_LRS"-CreateOption FromImage
-  $vmConfig = Set-AzVMBootDiagnostic -VM $vmConfig -Disable
-  New-AzVM -ResourceGroupName $labResourceGroupName -Location $labResourceGroupLocation -VM $vmConfig -Verbose
+    # Set VM config, and create a virtual machine
+    $osDisk = $vmNameArray[$i]
+    $vmConfig = New-AzVMConfig -VMName $vmNameArray[$i] -VMSize Standard_B1s | Set-AzVMSourceImage -Id $image | Add-AzVMNetworkInterface -Id $nic.Id  
+    $vmConfig = Set-AzVMOSDisk -VM $vmConfig -Name "$osDisk-myos-disk" -StorageAccountType "Standard_LRS"-CreateOption FromImage
+    $vmConfig = Set-AzVMBootDiagnostic -VM $vmConfig -Disable
+    $vm = New-AzVM -ResourceGroupName $labResourceGroupName -Location $labResourceGroupLocation -VM $vmConfig -Verbose
+    if($vm) { Write-Host "`nSUCCESS!" }
+    else
+    {
+      Write-Host "`nOOPS! VM not created!"    
+    }
+  }
+  Write-Host "`nLoop completed."
+  return
