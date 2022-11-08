@@ -458,52 +458,7 @@
           "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('debianx64DMZOnCloudNewnetworkSecurityGroupName'))]"
         }
       }
-    },
-    {
-      "name": "[variables('debianx64DMZOnCloudNewvmName')]",
-      "type": "Microsoft.Compute/virtualMachines",
-      "apiVersion": "2018-06-01",
-      "location": "[resourceGroup().location]",
-
-      "dependsOn": [
-        "[concat('Microsoft.Network/networkInterfaces/', variables('debianx64DMZOnCloudNewnicName'))]"
-      ],
-      "properties": {
-        "hardwareProfile": {
-          "vmSize": "[variables('debianx64DMZOnCloudNewvmSize')]"
-        },
-
-        "storageProfile": {
-          "osDisk": {
-            "createOption": "FromImage",
-            "name": "[concat(variables('debianx64DMZOnCloudNewvmName'), '-osdisk')]",
-            "caching": "ReadWrite",
-            "managedDisk": {
-              "storageAccountType": "Standard_LRS"
-            },
-            "diskSizeGB": 128
-          },
-          "imageReference": {
-            "publisher": "Debian",
-            "offer": "debian-10",
-            "sku": "10",
-            "version": "latest"
-          }
-        },
-        "osProfile": {
-          "computerName": "Debian",
-          "adminUsername": "[parameters('rootUsername')]",
-          "adminPassword": "[parameters('adminPassword')]"
-        },
-        "networkProfile": {
-          "networkInterfaces": [
-            {
-              "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('debianx64DMZOnCloudNewnicName'))]"
-            }
-          ]
-        }
-      }
-    },
+    },    
     {
       "apiVersion": "2017-04-01",
       "type": "Microsoft.Network/publicIPAddresses",
@@ -579,51 +534,6 @@
         ],
         "networkSecurityGroup": {
           "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('Debianx64DMZwebCMSCloudnetworkSecurityGroupName'))]"
-        }
-      }
-    },
-    {
-      "name": "[variables('Debianx64DMZwebCMSCloudvmName')]",
-      "type": "Microsoft.Compute/virtualMachines",
-      "apiVersion": "2018-06-01",
-      "location": "[resourceGroup().location]",
-
-      "dependsOn": [
-        "[concat('Microsoft.Network/networkInterfaces/', variables('Debianx64DMZwebCMSCloudnicName'))]"
-      ],
-      "properties": {
-        "hardwareProfile": {
-          "vmSize": "[variables('Debianx64DMZwebCMSCloudvmSize')]"
-        },
-
-        "storageProfile": {
-          "osDisk": {
-            "createOption": "FromImage",
-            "name": "[concat(variables('Debianx64DMZwebCMSCloudvmName'), '-osdisk')]",
-            "caching": "ReadWrite",
-            "managedDisk": {
-              "storageAccountType": "Standard_LRS"
-            },
-            "diskSizeGB": 128
-          },
-          "imageReference": {
-            "publisher": "Debian",
-            "offer": "debian-10",
-            "sku": "10",
-            "version": "latest"
-          }
-        },
-        "osProfile": {
-          "computerName": "Debian",
-          "adminUsername": "[parameters('rootUsername')]",
-          "adminPassword": "[parameters('adminPassword')]"
-        },
-        "networkProfile": {
-          "networkInterfaces": [
-            {
-              "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('Debianx64DMZwebCMSCloudnicName'))]"
-            }
-          ]
         }
       }
     },
@@ -741,51 +651,6 @@
         ],
         "networkSecurityGroup": {
           "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('DMZIServernetworkSecurityGroupName'))]"
-        }
-      }
-    },
-    {
-      "name": "[variables('DMZIServervmName')]",
-      "type": "Microsoft.Compute/virtualMachines",
-      "apiVersion": "2018-06-01",
-      "location": "[resourceGroup().location]",
-
-      "dependsOn": [
-        "[concat('Microsoft.Network/networkInterfaces/', variables('DMZIServernicName'))]"
-      ],
-      "properties": {
-        "hardwareProfile": {
-          "vmSize": "[variables('DMZIServervmSize')]"
-        },
-
-        "storageProfile": {
-          "osDisk": {
-            "createOption": "FromImage",
-            "name": "[concat(variables('DMZIServervmName'), '-osdisk')]",
-            "caching": "ReadWrite",
-            "managedDisk": {
-              "storageAccountType": "Standard_LRS"
-            },
-            "diskSizeGB": 30
-          },
-          "imageReference": {
-            "publisher": "Debian",
-            "offer": "debian-10",
-            "sku": "10",
-            "version": "latest"
-          }
-        },
-        "osProfile": {
-          "computerName": "Debian",
-          "adminUsername": "[parameters('rootUsername')]",
-          "adminPassword": "[parameters('adminPassword')]"
-        },
-        "networkProfile": {
-          "networkInterfaces": [
-            {
-              "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('DMZIServernicName'))]"
-            }
-          ]
         }
       }
     },
@@ -1130,51 +995,6 @@
         ],
         "networkSecurityGroup": {
           "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('DNSServernetworkSecurityGroupName'))]"
-        }
-      }
-    },
-    {
-      "name": "[variables('DNSServervmName')]",
-      "type": "Microsoft.Compute/virtualMachines",
-      "apiVersion": "2018-06-01",
-      "location": "[resourceGroup().location]",
-
-      "dependsOn": [
-        "[concat('Microsoft.Network/networkInterfaces/', variables('DNSServernicName'))]"
-      ],
-      "properties": {
-        "hardwareProfile": {
-          "vmSize": "[variables('DNSServervmSize')]"
-        },
-
-        "storageProfile": {
-          "osDisk": {
-            "createOption": "FromImage",
-            "name": "[concat(variables('DNSServervmName'), '-osdisk')]",
-            "caching": "ReadWrite",
-            "managedDisk": {
-              "storageAccountType": "Standard_LRS"
-            },
-            "diskSizeGB": 127
-          },
-          "imageReference": {
-            "publisher": "MicrosoftWindowsServer",
-            "offer": "WindowsServer",
-            "sku": "2019-Datacenter",
-            "version": "latest"
-          }
-        },
-        "osProfile": {
-          "computerName": "Debian",
-          "adminUsername": "[parameters('rootUsername')]",
-          "adminPassword": "[parameters('adminPassword')]"
-        },
-        "networkProfile": {
-          "networkInterfaces": [
-            {
-              "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('DNSServernicName'))]"
-            }
-          ]
         }
       }
     }
