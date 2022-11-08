@@ -1045,10 +1045,10 @@
             "diskSizeGB": 127
           },
           "imageReference": {
-            "publisher": "MicrosoftWindowsServer",
-              "offer": "WindowsServer",
-              "sku": "2019-Datacenter",
-              "version": "latest"
+            "publisher": "MicrosoftWindowsDesktop",
+              "offer": "windows10preview",
+              "sku": "win10-22h2-pro",
+              "version": "19045.1826.220709"
           }
         },
         "osProfile": {
@@ -1158,9 +1158,9 @@
             "diskSizeGB": 127
           },
           "imageReference": {
-            "publisher": "Debian",
-            "offer": "debian-10",
-            "sku": "10",
+            "publisher": "MicrosoftWindowsServer",
+            "offer": "WindowsServer",
+            "sku": "2019-Datacenter",
             "version": "latest"
           }
         },
