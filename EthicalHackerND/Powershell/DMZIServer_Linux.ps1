@@ -15,7 +15,7 @@ $udacityImageVersion = "1.0.0"
 $tenant1 = "9441a015-f081-4b16-8111-e38c5a1de18e"
 
 # ToDo for the Student
-$UserSubscriptionId= "cb8b28bf-cbe1-4648-9a3b-82aab5f9d651"
+$UserSubscriptionId= "xxxxxxxx-xxxxxxxx-xxxxxxxx-xxxxxxxx"
 $labResourceGroupName = "nd350-rg"
 
 # Arrays - Provided by Udacity - STATIC values

@@ -8,12 +8,8 @@ Import-Module -Name Az
 
 Connect-AzAccount
 
-# ToDo for the Student: Enter the subscription name you want to use
-$SubscriptionName= 'Pay-As-You-Go'
-
-
 # ToDo for the Student: Enter the subscription ID you want to use
-Select-AzSubscription -SubscriptionId "cb8b28bf-cbe1-4648-9a3b-82aab5f9d651"
+Select-AzSubscription -SubscriptionId "xxxxxxxx-xxxxxxxx-xxxxxxxx-xxxxxxxx"
 
 $rps = Get-AzResourceProvider -ListAvailable | Where-Object { $_.ProviderNamespace -like "microsoft*"}
 
