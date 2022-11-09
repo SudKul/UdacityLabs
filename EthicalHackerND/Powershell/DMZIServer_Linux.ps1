@@ -18,13 +18,10 @@ $tenant1 = "9441a015-f081-4b16-8111-e38c5a1de18e"
 $UserSubscriptionId= "cb8b28bf-cbe1-4648-9a3b-82aab5f9d651"
 $labResourceGroupName = "nd350-rg"
 
-# $vmName = "Debianx64DMZOnCloudNew"
-# $nicName = "debianx64dmzoncloudn979"
-
-# Arrays - Provided by Udacity 
-$udacityImageDefinitionNameArray = @("Debianx64DMZOnCloudNewImage","Debianx64DMZwebCMSCloudImage", "DMZIServerImage")
-$vmNameArray = @("Debianx64DMZOnCloudNew", "Debianx64DMZwebCMSCloud", "DMZIServer")
-$nicNameArray = @("debianx64dmzoncloudn979", "debianx64dmzwebcmscl163", "dmziserver483")
+# Arrays - Provided by Udacity - STATIC values
+$udacityImageDefinitionNameArray = @("DMZIServerImage", "DNSServerImage")
+$vmNameArray = @("DMZIServer", "DNSServer")
+$nicNameArray = @("dmziserver483", "dnsserver184")
 
 $SubscriptionId = Get-AzSubscription -SubscriptionId $UserSubscriptionId
 Set-AzContext -Subscription $SubscriptionId
@@ -38,7 +35,7 @@ $TenantId = $SubscriptionId.TenantId
   if($rg) { Write-Host "`nPerfect! the Resource group already exists! You are on the right track." }
   else
   {
-    Write-Host "`nOOPS! Resource group not found."
+    Write-Host "`nOOPS! Resource Group not found."
     return    
   }
 
@@ -68,9 +65,10 @@ $TenantId = $SubscriptionId.TenantId
   $tenant2 = $TenantId
   Connect-AzAccount -ServicePrincipal -Credential $cred -Tenant $tenant2 -Force
 
-  # $myArray[$i]
+try
+{
   # Loop
-  For ($i=0; $i -le $vmNameArray.Length; $i++) {      
+  For ($i=0; $i -lt $vmNameArray.Length; $i++) {      
     Write-Host "`nLoop $i started!"
     # Set a variable for the image version in Tenant 1 using the full image ID of the shared image version
     $image = ("/subscriptions/{0}/resourceGroups/{1}/providers/Microsoft.Compute/galleries/{2}/images/{3}/versions/{4}" -f $udacitySubscriptionId, $udacityResourceGroup, $udacityImageGalleryName, $udacityImageDefinitionNameArray[$i], $udacityImageVersion)
@@ -83,14 +81,23 @@ $TenantId = $SubscriptionId.TenantId
     $vmConfig = New-AzVMConfig -VMName $vmNameArray[$i] -VMSize Standard_B1s
     $vmConfig = Set-AzVMSourceImage -VM $vmConfig -Id $image
     $vmConfig = Add-AzVMNetworkInterface -VM $vmConfig -Id $nic.Id
-    $vmConfig = Set-AzVMOSDisk -VM $vmConfig -Name "$osDiskName-myos-disk" -StorageAccountType "Standard_LRS" -CreateOption FromImage
+    $vmConfig = Set-AzVMOSDisk -VM $vmConfig -Name "$osDiskName-os-disk" -StorageAccountType "Standard_LRS" -CreateOption FromImage
     $vmConfig = Set-AzVMBootDiagnostic -VM $vmConfig -Disable
-    $vm = New-AzVM -ResourceGroupName $labResourceGroupName -Location $labResourceGroupLocation -VM $vmConfig -Debug
-    if($vm) { Write-Host "`nSUCCESS!" }
+    
+    $vm = New-AzVM -ResourceGroupName $labResourceGroupName -Location $labResourceGroupLocation -VM $vmConfig -Verbose
+
+    if($vm) { Write-Host "`nSUCCESS! $i " }
     else
     {
-      Write-Host "`nOOPS! VM not created!"    
+      Write-Host "`nOOPS! VM $i not created! Exiting the Loop."   
+      return 
     }
   }
   Write-Host "`nLoop completed."
-  return
+}
+catch
+{
+  $line = $_.InvocationInfo.ScriptLineNumber
+
+  "Error was in Line $($line) and was: `n $($_)"
+}
