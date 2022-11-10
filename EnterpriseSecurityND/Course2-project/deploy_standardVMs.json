@@ -231,7 +231,7 @@
           }
         },
         "osProfile": {
-          "computerName": "Udacity-Student",
+          "computerName": "WindowsServer",
           "adminUsername": "[parameters('adminUsername')]",
           "adminPassword": "[parameters('adminPassword')]"
         },
@@ -388,7 +388,7 @@
           }
         },
         "osProfile": {
-          "computerName": "Udacity-Student",
+          "computerName": "Windows10",
           "adminUsername": "[parameters('adminUsername')]",
           "adminPassword": "[parameters('adminPassword')]"
         },
@@ -512,7 +512,7 @@
           }
         },
         "osProfile": {
-          "computerName": "Udacity-Student",
+          "computerName": "CentOS",
           "adminUsername": "[parameters('adminUsername')]",
           "adminPassword": "[parameters('adminPassword')]"
         },
