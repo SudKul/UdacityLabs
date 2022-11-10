@@ -496,7 +496,7 @@
           },
           "imageReference": {
             "publisher": "OpenLogic",
-            "offer": "CentOS",
+            "offer": "CentOS-LVM",
             "sku": "8-lvm-gen2",
             "version": "8.2.2020062401"
           }
