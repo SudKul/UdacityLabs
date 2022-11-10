@@ -230,6 +230,11 @@
             "version": "latest"
           }
         },
+        "osProfile": {
+          "computerName": "Udacity-Student",
+          "adminUsername": "[parameters('adminUsername')]",
+          "adminPassword": "[parameters('adminPassword')]"
+        },
         "networkProfile": {
           "networkInterfaces": [
             {
@@ -382,6 +387,11 @@
             "version": "19045.1826.220709"
           }
         },
+        "osProfile": {
+          "computerName": "Udacity-Student",
+          "adminUsername": "[parameters('adminUsername')]",
+          "adminPassword": "[parameters('adminPassword')]"
+        },
         "networkProfile": {
           "networkInterfaces": [
             {
@@ -500,6 +510,11 @@
             "sku": "8-lvm-gen2",
             "version": "8.2.2020062401"
           }
+        },
+        "osProfile": {
+          "computerName": "Udacity-Student",
+          "adminUsername": "[parameters('adminUsername')]",
+          "adminPassword": "[parameters('adminPassword')]"
         },
 
         "networkProfile": {
